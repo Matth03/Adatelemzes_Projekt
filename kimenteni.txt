@@ -1,0 +1,29 @@
+test_image_data = []
+test_labels = []
+
+test_dir = './TestData'
+
+
+for image_file in sorted(os.listdir(test_dir)):
+    image_path = os.path.join(test_dir, image_file)
+
+    image = cv.imread(image_path, cv.IMREAD_GRAYSCALE)
+
+    if image is None:
+        continue
+        
+    image = cv.resize(image, (image_size,image_size))
+
+    test_image_data.append(image)
+    test_labels.append(image_file)
+    
+test_image_data = np.array(test_image_data)
+
+test_image_data = test_image_data / 255.0
+
+test_pred = model.predict(test_image_data)
+test_pred_labels = np.argmax(test_pred, axis=1) + 1
+
+data_to_save = np.column_stack((test_pred_labels, test_labels))
+
+np.savetxt("predictions.txt",data_to_save,fmt='%s',delimiter=';')
